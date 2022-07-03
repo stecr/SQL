@@ -1,0 +1,31 @@
+--Create a pet store database
+
+CREATE TABLE pet_store(id INTEGER PRIMARY KEY, name TEXT, price REAL, quantity INTEGER, aisle_num INTEGER);
+
+INSERT INTO pet_store VALUES (1, "dog kibble", 4.99, 100, 3);
+INSERT INTO pet_store VALUES (2, "litter", 12.99, 19, 7);
+INSERT INTO pet_store VALUES (3, "crickets", 2.00, 52, 10);
+INSERT INTO pet_store VALUES (4, "fish food", 7.99, 33, 15);
+INSERT INTO pet_store VALUES (5, "fish tank", 99.99, 6, 15);
+INSERT INTO pet_store VALUES (6, "brush", 11.00, 21, 4);
+INSERT INTO pet_store VALUES (7, "dog treats", 6.99, 65, 3);
+INSERT INTO pet_store VALUES (8, "cat mouse toy", 5.99, 12, 6);
+INSERT INTO pet_store VALUES (9, "leash", 15.99, 80, 1);
+INSERT INTO pet_store VALUES (10, "dog shampoo", 9.99, 25, 4);
+INSERT INTO pet_store VALUES (11, "catnip", 22.00, 17, 8);
+INSERT INTO pet_store VALUES (12, "tennis ball", 1.99, 35, 5);
+INSERT INTO pet_store VALUES (13, "cat raincoat", 19.99, 6, 2);
+INSERT INTO pet_store VALUES (14, "flea prevention", 59.99, 49, 9);
+INSERT INTO pet_store VALUES (15, "hamster", 40.00, 9, 13);
+
+--Display the database sorted by price (ascending). Shows range of product prices.
+SELECT * FROM pet_store ORDER BY price;
+
+--Display the product name and its aisle number ordered by aisle number. Organizes products by aisle.
+SELECT name, aisle_num FROM pet_store ORDER BY aisle_num;
+
+--Displays the names of products whose inventory is less than 15, and the quantity of each. Helps determine which products are running low in stock.
+SELECT name, quantity FROM pet_store WHERE quantity<15;
+
+--Displays the sum of the quantity of all of the products. How many items are for sale in the pet store?
+SELECT SUM(quantity) FROM pet_store;
