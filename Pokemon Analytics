@@ -1,0 +1,86 @@
+-- Using this Pokemon data set << https://gist.github.com/pamelafox/26b9357c6120d3d0d27c2b90c950e8c6 >> I came up with a few questions and queries 
+-- to discover some new things and reorganize the table for different uses.
+
+-- My Queries
+
+-- Which pokemon would be good against a fire type with 100 HP (Ground, rock, water are weaknesses)? Ordered by high to low attack.
+SELECT Name, Type_1 as 'Type 1', Type_2 as 'Type 2',Attack, HP
+FROM pokemon
+WHERE (Type_1 in ('Ground', 'Rock', 'Water') OR Type_2 in ('Ground', 'Rock', 'Water', Null))
+	AND HP > 100
+ORDER BY Attack desc;
+
+
+
+-- Which water-type pokemon have the strongest special attack? Compared to all Pokemon, are they faster or slower than average?
+SELECT Name, Sp_Atk,
+		 CASE WHEN (SELECT avg(Speed) FROM pokemon) < Speed THEN 'Fast'
+		 WHEN (SELECT avg(Speed) FROM pokemon) > Speed THEN 'Slow'
+             ELSE 'Average'
+		 END as 'Speed Compared to Average'
+FROM pokemon
+WHERE (Type_1 = 'Water' OR Type_2 = 'Water') AND Sp_Atk >=90
+ORDER BY Sp_Atk desc;
+
+
+
+-- How many single and dual types are there?
+SELECT SUM(Type_2 is null) as 'Number of Single Types', SUM(Type_2 is not null) as 'Number of Dual Types'
+FROM pokemon;
+
+
+
+-- What types would each pokemon be good against? (Note: normal types aren't effective to any type)
+SELECT Number,Name, Type_1,
+	CASE WHEN Type_1 = 'Normal' THEN 'Not super effective'
+		 WHEN Type_1 = 'Fighting' THEN 'Normal, Rock, Steel, Ice, Dark'
+         WHEN Type_1 = 'Flying' THEN 'Fighting, Bug, Grass'
+         WHEN Type_1 = 'Poison' THEN 'Grass, Fairy'
+         WHEN Type_1 = 'Ground' THEN 'Poison, Rock, Steel, Fire, Electric'
+         WHEN Type_1 = 'Rock' THEN 'Flying, Bug, Fire, Ice'
+         WHEN Type_1 = 'Bug' THEN 'Grass, Psychic, Dark'
+         WHEN Type_1 = 'Ghost' THEN 'Ghost, Psychic'
+         WHEN Type_1 = 'Steel' THEN 'Rock, Ice, Fairy'
+         WHEN Type_1 = 'Fire' THEN 'Bug, Steel, Grass, Ice'
+         WHEN Type_1 = 'Water' THEN 'Ground, Rock, Fire'
+         WHEN Type_1 = 'Grass' THEN 'Ground, Rock, Water'
+         WHEN Type_1 = 'Electric' THEN 'Flying, Water'
+         WHEN Type_1 = 'Psychic' THEN 'Fighting, Poison'
+         WHEN Type_1 = 'Ice' THEN 'Flying, Ground, Grass, Dragon'
+         WHEN Type_1 = 'Dragon' THEN 'Dragon'
+         WHEN Type_1 = 'Fairy' THEN 'Fighting, Dragon, Dark'
+         WHEN Type_1 = 'Dark' THEN 'Ghost, Psychic'
+	ELSE 'No information on this type available.'
+    END as 'Type 1 Strong Against',
+    Type_2,
+    CASE WHEN Type_2 is null THEN null
+		 WHEN Type_2 = 'Normal' THEN 'Not super effective'
+		 WHEN Type_2 = 'Fighting' THEN 'Normal, Rock, Steel, Ice, Dark'
+         WHEN Type_2 = 'Flying' THEN 'Fighting, Bug, Grass'
+         WHEN Type_2 = 'Poison' THEN 'Grass, Fairy'
+         WHEN Type_2 = 'Ground' THEN 'Poison, Rock, Steel, Fire, Electric'
+         WHEN Type_2 = 'Rock' THEN 'Flying, Bug, Fire, Ice'
+         WHEN Type_2 = 'Bug' THEN 'Grass, Psychic, Dark'
+         WHEN Type_2 = 'Ghost' THEN 'Ghost, Psychic'
+         WHEN Type_2 = 'Steel' THEN 'Rock, Ice, Fairy'
+         WHEN Type_2 = 'Fire' THEN 'Bug, Steel, Grass, Ice'
+         WHEN Type_2 = 'Water' THEN 'Ground, Rock, Fire'
+         WHEN Type_2 = 'Grass' THEN 'Ground, Rock, Water'
+         WHEN Type_2 = 'Electric' THEN 'Flying, Water'
+         WHEN Type_2 = 'Psychic' THEN 'Fighting, Poison'
+         WHEN Type_2 = 'Ice' THEN 'Flying, Ground, Grass, Dragon'
+         WHEN Type_2 = 'Dragon' THEN 'Dragon'
+         WHEN Type_2 = 'Fairy' THEN 'Fighting, Dragon, Dark'
+         WHEN Type_2 = 'Dark' THEN 'Ghost, Psychic'
+	ELSE 'No information on this type available.'
+    END as 'Type 2 Strong Against'
+FROM pokemon;
+
+
+
+-- How many legendary pokemon are there per generation? What are their average stats? Does each generation get stronger?
+SELECT Generation, COUNT(*) as 'Number of Legendaries per Generation', avg(total), avg(HP), avg(Attack), avg(Defense),
+		avg(Sp_Atk), avg(Sp_Def), avg(Speed)
+FROM pokemon
+WHERE Legendary = 'True'
+GROUP BY Generation;
