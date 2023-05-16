@@ -1,0 +1,46 @@
+-- These are some queries in PostgreSQL for a database containing information on Netflix shows and the people affiliated with the shows.
+
+--How many movie titles are there in the database? (movies only, not tv shows)
+
+SELECT COUNT(*)
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+WHERE titles.type = 'Movie';
+
+
+
+
+--When was the most recent batch of tv shows and/or movies added to the database?
+
+SELECT MAX(date(titles.date_added))
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles;
+
+
+
+
+--List all the movies and tv shows in alphabetical order.
+SELECT titles.title
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+ORDER BY title asc;
+
+
+
+
+--Who was the Director for the movie Bright Star?
+SELECT people.director
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+RIGHT JOIN "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles 
+ON people.show_id = titles.show_id
+WHERE titles.title = 'Bright Star';
+
+
+
+
+--What is the oldest movie in the database and what year was it made?
+
+SELECT titles.title, titles.release_year
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+WHERE titles.type = 'Movie'
+AND titles.release_year <= 
+(SELECT MIN(release_year) 
+  FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" 
+    WHERE type = 'Movie');
