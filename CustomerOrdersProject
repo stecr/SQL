@@ -1,0 +1,44 @@
+-- How many orders were placed in January?
+SELECT COUNT(orderID) 
+FROM BIT_DB.JanSales
+WHERE length(orderID)=6 AND orderID <> 'Order ID';
+
+-- How many of those orders were for an iPhone?
+SELECT COUNT(orderID) 
+FROM BIT_DB.JanSales
+WHERE length(orderID)=6 AND orderID <> 'Order ID'
+AND Product = 'iPhone';
+
+-- Select the customer account numbers for all the orders that were placed in February.
+SELECT distinct customers.acctnum
+FROM BIT_DB.customers
+INNER JOIN BIT_DB.FebSales ON customers.order_id = FebSales.orderID
+WHERE length(FebSales.orderID)=6 AND FebSales.orderID <> 'Order ID';
+
+-- Which product was the cheapest one sold in January, and what was the price?
+SELECT distinct Product, price
+FROM BIT_DB.JanSales
+WHERE length(orderID)=6 AND orderID <> 'Order ID'
+AND price = (SELECT MIN(price)FROM BIT_DB.JanSales)
+GROUP BY Product;
+
+-- What is the total revenue for each product sold in January? (Revenue can be calculated using the number of products sold and the price of the products).
+SELECT Product, ROUND(SUM(Quantity) * price,2) AS 'Total Revenue By Product'
+FROM BIT_DB.JanSales
+WHERE length(orderID)=6 AND orderID <> 'Order ID'
+GROUP BY Product;
+
+-- Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
+SELECT Product, SUM(quantity),ROUND(SUM(Quantity) * price,2) AS 'Total Revenue'
+FROM BIT_DB.FebSales
+WHERE length(orderID)=6 AND orderID <> 'Order ID'
+AND location = '548 Lincoln St, Seattle, WA 98101'
+GROUP BY Product;
+
+-- How many customers ordered more than 2 products at a time in February, and what was the average amount spent for those customers?
+SELECT COUNT(distinct customers.acctnum) AS 'Sum of Customers Who Ordered 2+ Items at a Time', ROUND(AVG(FebSales.quantity * FebSales.price),2) AS 'Average Amount Spent'
+FROM BIT_DB.customers
+INNER JOIN BIT_DB.FebSales ON customers.order_id = FebSales.orderID
+WHERE length(FebSales.orderID)=6 AND FebSales.orderID <> 'Order ID'
+AND length(customers.order_id)=6 AND customers.order_id <> 'Order ID'
+AND FebSales.Quantity > 2;
