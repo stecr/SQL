@@ -1,3 +1,6 @@
+-- Here I've queried a database containing a table with customer information and several tables with order information according to month.
+-- Due to inconsistent or missing order IDs, some rows were ommitted. 
+
 -- How many orders were placed in January?
 SELECT COUNT(orderID) 
 FROM BIT_DB.JanSales
@@ -22,7 +25,7 @@ WHERE length(orderID)=6 AND orderID <> 'Order ID'
 AND price = (SELECT MIN(price)FROM BIT_DB.JanSales)
 GROUP BY Product;
 
--- What is the total revenue for each product sold in January? (Revenue can be calculated using the number of products sold and the price of the products).
+-- What is the total revenue for each product sold in January? 
 SELECT Product, ROUND(SUM(Quantity) * price,2) AS 'Total Revenue By Product'
 FROM BIT_DB.JanSales
 WHERE length(orderID)=6 AND orderID <> 'Order ID'
