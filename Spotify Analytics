@@ -1,0 +1,57 @@
+-- I used a dataset from Kaggle to create a table and explore its data. It is a .csv file containing the Top 50 songs in 2021 on
+--Spotify and different attributes for each song.
+
+-- I first created a table to insert the Spotify table.
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+
+--After inserting the data into the table, I came up with a few questions I was interested in finding out from the data and wrote some
+--SQL queries.
+
+-- Which artists have more than one song in the Top 50 List, how many songs do they have, and what is the average popularity of their songs?
+--Order the results by average popularity.
+SELECT artist_name, COUNT(id) AS 'Number of Songs', AVG(popularity)
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+HAVING `Number of Songs`>1
+ORDER BY AVG(popularity) desc;
+
+-- What are the top 10 most danceable songs? What is their position in the Top 50 List (Top 25 or Bottom 25)?
+SELECT track_name,artist_name, danceability, 
+CASE    WHEN id<=25 THEN 'Top 25'
+        WHEN id>25 THEN 'Bottom 25'
+        ELSE 'No position'   
+    END as 'Top or Bottom 25'
+FROM BIT_DB.Spotifydata
+ORDER BY danceability desc
+LIMIT 10;
+
+-- What is the most common song key in the Top 50 List? Which songs are in that key?
+-- Data Description from Kaggle: "Key - the key the track is in. Integers map to pitches using standard Pitch Class notation. 
+-- E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1 (range: -1; 11)"
+-- Interestingly, C♯/D♭ was the most common key with 8 songs.
+SELECT track_name, artist_name, song_key
+FROM BIT_DB.Spotifydata
+WHERE song_key =
+(SELECT song_key
+  FROM BIT_DB.Spotifydata
+  GROUP BY song_key
+  ORDER BY COUNT(id) desc
+  LIMIT 1);
